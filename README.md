@@ -5,3 +5,7 @@
 https://www.baeldung.com/java-instrumentation
 
 https://github.com/eugenp/tutorials/blob/master/core-java-modules/core-java-jvm/src/main/java/com/baeldung/instrumentation/agent/MyInstrumentationAgent.java
+
+### manifest
+
+https://www.baeldung.com/java-jar-manifest
