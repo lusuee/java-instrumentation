@@ -1,0 +1,2 @@
+Premain-Class: org.example.SimpleAgent
+Can-Retransform-Classes: true
