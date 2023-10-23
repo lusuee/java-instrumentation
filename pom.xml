@@ -33,10 +33,34 @@
     </dependency>
 
     <dependency>
+      <groupId>io.earcam.wrapped</groupId>
+      <artifactId>com.sun.tools.attach</artifactId>
+      <version>1.8.0_jdk8u131-b11</version>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <encoding>UTF-8</encoding>
+          <compilerArguments>
+            <verbose/>
+            <!-- 将jdk的依赖jar打入项目中，这样项目中使用的jdk的依赖就尅正常使用 -->
+            <bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar;${java.home}/lib/jsse.jar</bootclasspath>
+          </compilerArguments>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

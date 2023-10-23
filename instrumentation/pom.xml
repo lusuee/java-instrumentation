@@ -17,6 +17,16 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.sun</groupId>
+      <artifactId>tools</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>C:\Program Files\Eclipse Adoptium\jdk-8.0.382.5-hotspot\lib\tools.jar</systemPath>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -27,6 +37,14 @@
           <archive>
             <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
           </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>8</source>
+          <target>8</target>
         </configuration>
       </plugin>
     </plugins>
