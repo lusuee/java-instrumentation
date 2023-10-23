@@ -1,15 +1,16 @@
 package org.example;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
-
-import jdk.internal.org.objectweb.asm.*;
+import jdk.internal.org.objectweb.asm.ClassReader;
+import jdk.internal.org.objectweb.asm.ClassVisitor;
+import jdk.internal.org.objectweb.asm.ClassWriter;
+import jdk.internal.org.objectweb.asm.MethodVisitor;
+import jdk.internal.org.objectweb.asm.Opcodes;
 import jdk.internal.org.objectweb.asm.commons.AdviceAdapter;
-import jdk.internal.org.objectweb.asm.tree.ClassNode;
 
 public class MyTransformer implements ClassFileTransformer {
 
@@ -42,7 +43,7 @@ public class MyTransformer implements ClassFileTransformer {
     System.out.println("[Agent] Transforming class: " + className);
 
     ClassReader classReader = new ClassReader(classfileBuffer);
-    ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+    ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
     /*
         ClassNode node = new ClassNode(327680);
@@ -75,16 +76,13 @@ public class MyTransformer implements ClassFileTransformer {
               System.out.println(name);
               mv =
                   new AdviceAdapter(Opcodes.ASM5, mv, access, name, desc) {
-                    private final Label startLabel = new Label();
-                    private final Label endLabel = new Label();
 
                     @Override
                     protected void onMethodExit(int opcode) {
                       if (opcode == Opcodes.ARETURN) {
-                        // 在 return au 之前添加代码
-                        visitLabel(startLabel);
-                        visitFieldInsn(
-                            Opcodes.GETSTATIC, owner, "au", "Lcom/alibaba/fastjson/JSONObject;");
+                        //                        visitFieldInsn(
+                        //                            Opcodes.GETSTATIC, owner, "au",
+                        // "Lcom/alibaba/fastjson/JSONObject;");
                         visitLdcInsn("authnum");
                         visitLdcInsn("1500");
                         visitMethodInsn(
@@ -93,36 +91,21 @@ public class MyTransformer implements ClassFileTransformer {
                             "put",
                             "(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;",
                             false);
+                        visitInsn(Opcodes.POP);
+                        visitFieldInsn(
+                            Opcodes.GETSTATIC, owner, "au", "Lcom/alibaba/fastjson/JSONObject;");
 
-                        System.out.println("after put");
-                        /*
-                                                visitFieldInsn(
-                                                    Opcodes.GETSTATIC,
-                                                    "com/metasoft/framework/auth/AuthService",
-                                                    "readAu",
-                                                    "Lcom/alibaba/fastjson/JSONObject;");
-                                                visitLdcInsn("fullname");
-                                                visitLdcInsn("hello");
-                                                visitMethodInsn(
-                                                    Opcodes.INVOKEVIRTUAL,
-                                                    "com/alibaba/fastjson/JSONObject",
-                                                    "put",
-                                                    "(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;",
-                                                    false);
-                        */
-
-                        // 设置标签以跳过原始的 return au 指令
-                        visitLabel(endLabel);
-                        System.out.println("after end label");
-                        visitLocalVariable(
-                            "au",
-                            "Lcom/alibaba/fastjson/JSONObject;",
-                            null,
-                            startLabel,
-                            endLabel,
-                            2);
-
-                        System.out.println("after......");
+                        visitLdcInsn("fullname");
+                        visitLdcInsn("fudanwei");
+                        visitMethodInsn(
+                            Opcodes.INVOKEVIRTUAL,
+                            "com/alibaba/fastjson/JSONObject",
+                            "put",
+                            "(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;",
+                            false);
+                        visitInsn(Opcodes.POP);
+                        visitFieldInsn(
+                            Opcodes.GETSTATIC, owner, "au", "Lcom/alibaba/fastjson/JSONObject;");
                       }
                     }
                   };

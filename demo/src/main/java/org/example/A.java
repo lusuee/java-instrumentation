@@ -4,14 +4,16 @@ import com.alibaba.fastjson.JSONObject;
 
 public class A {
 
-  private static JSONObject au;
+  public static JSONObject au;
 
   public static JSONObject readAu() {
     au = new JSONObject();
     au.put("hello", "world");
+    au.put("authnum", "500");
     System.out.println("Hello World!");
     System.out.println(au.toJSONString());
     au.put("aaaa", "bbbb");
+    au.put("cccc", "dddd");
     return au;
   }
 

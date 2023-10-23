@@ -4,6 +4,7 @@ package org.example;
 public class App {
   public static void main(String[] args) {
     A.readAu();
-    System.out.println(A.get("aaa"));
+    System.out.println(A.get("aaaa"));
+    System.out.println(A.au.toJSONString());
   }
 }
