@@ -2,7 +2,6 @@ package org.example;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
-import java.util.Arrays;
 
 public class SimpleAgent {
 
@@ -11,10 +10,10 @@ public class SimpleAgent {
     //    doTest(agentArgs, instrumentation);
     System.out.println("premain start ...");
 
-    String className = "com.metasoft.framework.auth.AuthService";
+    //    String className = "com.metasoft.framework.auth.AuthService";
+    String className = "org.example.A";
     Class<?> target = Thread.currentThread().getContextClassLoader().loadClass(className);
     System.out.println(target);
-    //    String className = "org.example.A";
     transformClass(className, instrumentation);
   }
 

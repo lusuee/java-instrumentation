@@ -1,16 +1,17 @@
 package org.example;
 
-import jdk.internal.org.objectweb.asm.*;
-import jdk.internal.org.objectweb.asm.commons.AdviceAdapter;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
-
 import static jdk.internal.org.objectweb.asm.Opcodes.ASM5;
 
+import java.lang.instrument.ClassFileTransformer;
+import java.security.ProtectionDomain;
+import jdk.internal.org.objectweb.asm.ClassReader;
+import jdk.internal.org.objectweb.asm.ClassVisitor;
+import jdk.internal.org.objectweb.asm.ClassWriter;
+import jdk.internal.org.objectweb.asm.MethodVisitor;
+import jdk.internal.org.objectweb.asm.Opcodes;
+import jdk.internal.org.objectweb.asm.commons.AdviceAdapter;
+
+/** 修改 validLicense 方法 */
 public class CheckAuTransformer implements ClassFileTransformer {
 
   private final String targetClassName;
@@ -25,8 +26,7 @@ public class CheckAuTransformer implements ClassFileTransformer {
       String className,
       Class<?> classBeingRedefined,
       ProtectionDomain protectionDomain,
-      byte[] classfileBuffer)
-      throws IllegalClassFormatException {
+      byte[] classfileBuffer) {
 
     String finalTargetClassName = this.targetClassName.replaceAll("\\.", "/");
     if (!finalTargetClassName.equals(className)) {
@@ -50,46 +50,22 @@ public class CheckAuTransformer implements ClassFileTransformer {
                     new AdviceAdapter(ASM5, mv, access, name, desc) {
                       @Override
                       protected void onMethodExit(int opcode) {
+                        System.out.println(opcode);
                         if (opcode == Opcodes.RETURN) {
-                          visitFieldInsn(
-                              Opcodes.GETSTATIC,
-                              "java/lang/System",
-                              "out",
-                              "Ljava/io/PrintStream;");
-                          visitFieldInsn(
-                              Opcodes.GETSTATIC,
-                              "com/metasoft/framework/auth/ControllerService",
-                              "CHECK_LICENSE_RESULT",
-                              "Ljava/lang/Integer;");
-                          visitMethodInsn(
-                              Opcodes.INVOKEVIRTUAL,
-                              "java/io/PrintStream",
-                              "println",
-                              "(Ljava/lang/Integer;)V",
-                              false);
-
-                          visitLdcInsn(0);
-                          visitFieldInsn(
-                              Opcodes.PUTSTATIC,
-                              "com/metasoft/framework/auth/ControllerService",
-                              "CHECK_LICENSE_RESULT",
-                              "Ljava/lang/Integer;");
+                          visitInsn(Opcodes.ICONST_0);
+                          visitFieldInsn(Opcodes.PUTSTATIC, className, "CHECK_LICENSE_RESULT", "I");
 
                           visitFieldInsn(
                               Opcodes.GETSTATIC,
                               "java/lang/System",
                               "out",
                               "Ljava/io/PrintStream;");
-                          visitFieldInsn(
-                              Opcodes.GETSTATIC,
-                              "com/metasoft/framework/auth/ControllerService",
-                              "CHECK_LICENSE_RESULT",
-                              "Ljava/lang/Integer;");
+                          visitFieldInsn(Opcodes.GETSTATIC, className, "CHECK_LICENSE_RESULT", "I");
                           visitMethodInsn(
                               Opcodes.INVOKEVIRTUAL,
                               "java/io/PrintStream",
                               "println",
-                              "(Ljava/lang/Integer;)V",
+                              "(I)V",
                               false);
                         }
                       }
@@ -103,14 +79,7 @@ public class CheckAuTransformer implements ClassFileTransformer {
       System.out.println("valid license modify end...");
       cr.accept(cv, ClassReader.EXPAND_FRAMES);
 
-      byte[] byteArray = cw.toByteArray();
-      try (FileOutputStream fos = new FileOutputStream("A11024.class")) {
-        fos.write(byteArray);
-        fos.flush();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-      return byteArray;
+      return cw.toByteArray();
     } catch (Exception e) {
       e.printStackTrace();
     }

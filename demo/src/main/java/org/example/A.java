@@ -6,7 +6,7 @@ public class A {
 
   public static JSONObject au;
 
-  public static String VALUE;
+  public static int CHECK_LICENSE_RESULT;
 
   public static JSONObject readAu() {
     au = new JSONObject();
@@ -19,12 +19,12 @@ public class A {
     return au;
   }
 
-  public static void checkAu() {
-    VALUE = "1";
-    au.put("1", "1");
-    System.out.println(VALUE);
-    VALUE = "2";
-    System.out.println(VALUE);
+  public static void validLicense() {
+    CHECK_LICENSE_RESULT = 1;
+    //    au.put("1", "1");
+    System.out.println(CHECK_LICENSE_RESULT);
+    CHECK_LICENSE_RESULT = 1000;
+    System.out.println(CHECK_LICENSE_RESULT);
   }
 
   public static String get(String key) {
