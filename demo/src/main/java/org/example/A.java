@@ -6,6 +6,8 @@ public class A {
 
   public static JSONObject au;
 
+  public static String VALUE;
+
   public static JSONObject readAu() {
     au = new JSONObject();
     au.put("hello", "world");
@@ -15,6 +17,14 @@ public class A {
     au.put("aaaa", "bbbb");
     au.put("cccc", "dddd");
     return au;
+  }
+
+  public static void checkAu() {
+    VALUE = "1";
+    au.put("1", "1");
+    System.out.println(VALUE);
+    VALUE = "2";
+    System.out.println(VALUE);
   }
 
   public static String get(String key) {

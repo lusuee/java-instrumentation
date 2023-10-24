@@ -31,11 +31,21 @@ public class MyTransformer implements ClassFileTransformer {
       ProtectionDomain protectionDomain,
       byte[] classfileBuffer)
       throws IllegalClassFormatException {
-    byte[] byteCode = classfileBuffer;
-
     String finalTargetClassName = this.targetClassName.replaceAll("\\.", "/");
     if (!finalTargetClassName.equals(className)) {
-      return byteCode;
+      return classfileBuffer;
+    }
+
+    System.out.println("before write file...");
+    try {
+      File file = new File("A11024-1.class");
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(classfileBuffer);
+      fos.flush();
+      fos.close();
+      System.out.println(file.getAbsolutePath());
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
     //    if (loader.equals(targetClassLoader)) {
@@ -45,24 +55,8 @@ public class MyTransformer implements ClassFileTransformer {
     ClassReader classReader = new ClassReader(classfileBuffer);
     ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
-    /*
-        ClassNode node = new ClassNode(327680);
-        classReader.accept(node, 0);
-
-        for (MethodNode method : node.methods) {
-          if (method.name.equals("readAu")) {
-            System.out.println(method.instructions);
-
-            ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
-            while (iterator.hasNext()) {
-              AbstractInsnNode insnNode = iterator.next();
-            }
-          }
-        }
-    */
-
-    String owner = "org/example/A";
-    //    String owner = "com/metasoft/framework/auth/AuthService";
+    //    String owner = "org/example/A";
+    String owner = "com/metasoft/framework/auth/AuthService";
 
     ClassVisitor classVisitor =
         new ClassVisitor(Opcodes.ASM5, classWriter) {
@@ -80,9 +74,6 @@ public class MyTransformer implements ClassFileTransformer {
                     @Override
                     protected void onMethodExit(int opcode) {
                       if (opcode == Opcodes.ARETURN) {
-                        //                        visitFieldInsn(
-                        //                            Opcodes.GETSTATIC, owner, "au",
-                        // "Lcom/alibaba/fastjson/JSONObject;");
                         visitLdcInsn("authnum");
                         visitLdcInsn("1500");
                         visitMethodInsn(
@@ -95,8 +86,8 @@ public class MyTransformer implements ClassFileTransformer {
                         visitFieldInsn(
                             Opcodes.GETSTATIC, owner, "au", "Lcom/alibaba/fastjson/JSONObject;");
 
-                        visitLdcInsn("fullname");
-                        visitLdcInsn("fudanwei");
+                        visitLdcInsn("authdead");
+                        visitLdcInsn("2023-12-31");
                         visitMethodInsn(
                             Opcodes.INVOKEVIRTUAL,
                             "com/alibaba/fastjson/JSONObject",
@@ -109,54 +100,29 @@ public class MyTransformer implements ClassFileTransformer {
                       }
                     }
                   };
+
+              System.out.println("modify end...");
             }
             return mv;
           }
         };
-    System.out.println("after mv");
 
-    classReader.accept(classVisitor, 0);
-    byte[] byteArray = classWriter.toByteArray();
-
+    System.out.println("start accept...");
     try {
-      FileOutputStream fos = new FileOutputStream(new File("A1.class"));
+      classReader.accept(classVisitor, ClassReader.EXPAND_FRAMES);
+      byte[] byteArray = classWriter.toByteArray();
+
+      System.out.println("write other file...");
+      File file = new File("A11024.class");
+      System.out.println(file.getAbsolutePath());
+      FileOutputStream fos = new FileOutputStream(file);
       fos.write(byteArray);
       fos.flush();
       fos.close();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      e.printStackTrace();
     }
 
     return classWriter.toByteArray();
-    //    return byteCode;
-
-    /*
-        try {
-          loader.loadClass(classBeingRedefined.getName());
-
-          ClassPool cp = ClassPool.getDefault();
-          System.out.println("being defined: " + classBeingRedefined.getName());
-          CtClass cc = cp.get(classBeingRedefined.getName());
-          System.out.println("cc: " + cc);
-          CtMethod m = cc.getDeclaredMethod("readAu");
-          System.out.println("[method]" + m);
-
-          // 修改授权数
-          String after =
-              "System.out.println(\"hello world! \" + au.toJSONString());"
-                  + "au.put(\"authnum\", \"1999\");"
-                  + "System.out.println(au.toJSONString());";
-          System.out.println("after: " + after);
-
-          m.insertAfter(after);
-          byteCode = cc.toBytecode();
-          cc.detach();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-    */
-    //    }
-
-    //    return byteCode;
   }
 }

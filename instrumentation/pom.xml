@@ -23,9 +23,9 @@
       <artifactId>tools</artifactId>
       <version>1.0</version>
       <scope>system</scope>
-      <!--      <systemPath>C:\Program Files\Eclipse Adoptium\jdk-8.0.382.5-hotspot\lib\tools.jar</systemPath>-->
+      <systemPath>C:\Program Files\Eclipse Adoptium\jdk-8.0.382.5-hotspot\lib\tools.jar</systemPath>
       <!--      <systemPath>/Users/heyingjie/.sdkman/candidates/java/current/lib/tools.jar</systemPath>-->
-      <systemPath>/Users/heyingjie/.sdkman/candidates/java/8.0.345-tem/jre/lib/rt.jar</systemPath>
+      <!--      <systemPath>/Users/heyingjie/.sdkman/candidates/java/8.0.345-tem/jre/lib/rt.jar</systemPath>-->
     </dependency>
   </dependencies>
 

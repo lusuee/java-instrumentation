@@ -10,37 +10,24 @@ public class SimpleAgent {
       throws UnmodifiableClassException, ClassNotFoundException {
     //    doTest(agentArgs, instrumentation);
     System.out.println("premain start ...");
-    //    String className = "com.metasoft.framework.auth.AuthService";
-    String className = "org.example.A";
+
+    String className = "com.metasoft.framework.auth.AuthService";
+    Class<?> target = Thread.currentThread().getContextClassLoader().loadClass(className);
+    System.out.println(target);
+    //    String className = "org.example.A";
     transformClass(className, instrumentation);
   }
 
   public static void agentmain(String agentArgs, Instrumentation instrumentation) {
-    String className = "com.metasoft.framework.auth.AuthService";
-    try {
-      System.out.println("agentmain start ...");
-      transformClass(className, instrumentation);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    System.out.println("agentmain start ...");
 
-    /*
-        MyTransformer transformer = new MyTransformer();
-        Class<?> target = null;
-        try {
-          target = Thread.currentThread().getContextClassLoader().loadClass(className);
-          instrumentation.addTransformer(transformer, true);
-          instrumentation.retransformClasses(target);
-        } catch (ClassNotFoundException | UnmodifiableClassException e) {
-          e.printStackTrace();
-        } finally {
-          instrumentation.removeTransformer(transformer);
-        }
-    */
+    //    String className = "com.metasoft.framework.auth.AuthService";
+    String className = "com.metasoft.framework.auth.ControllerService";
+    transformClass(className, instrumentation);
   }
 
   private static void transformClass(String className, Instrumentation instrumentation) {
-    Class<?> targetClass = null;
+    Class<?> targetClass;
     try {
       targetClass = Class.forName(className);
       transform(targetClass, targetClass.getClassLoader(), instrumentation);
@@ -50,7 +37,6 @@ public class SimpleAgent {
     }
 
     for (Class<?> loadedClass : instrumentation.getAllLoadedClasses()) {
-      System.out.println(loadedClass.getName());
       if (loadedClass.getName().equals(className)) {
         targetClass = loadedClass;
         transform(targetClass, targetClass.getClassLoader(), instrumentation);
@@ -62,15 +48,16 @@ public class SimpleAgent {
 
   private static void transform(
       Class<?> targetClass, ClassLoader classLoader, Instrumentation instrumentation) {
-    MyTransformer myTransformer = new MyTransformer(targetClass.getName(), classLoader);
+    //    MyTransformer myTransformer = new MyTransformer(targetClass.getName(), classLoader);
+    CheckAuTransformer transformer = new CheckAuTransformer(targetClass.getName());
 
-    instrumentation.addTransformer(myTransformer, true);
+    instrumentation.addTransformer(transformer, true);
     try {
       instrumentation.retransformClasses(targetClass);
     } catch (UnmodifiableClassException e) {
       throw new RuntimeException(e);
     } finally {
-      instrumentation.removeTransformer(myTransformer);
+      instrumentation.removeTransformer(transformer);
     }
   }
 

@@ -29,7 +29,7 @@ public class AgentLoader {
             .findFirst()
             .orElseThrow(() -> new AttachNotSupportedException("No suitable provider found"));
 
-    VirtualMachine virtualMachine = provider.attachVirtualMachine("6100");
+    VirtualMachine virtualMachine = provider.attachVirtualMachine("4016");
     virtualMachine.loadAgent("D:\\instrumentation-1.0-SNAPSHOT.jar");
     virtualMachine.detach();
   }
